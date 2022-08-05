@@ -1,0 +1,21 @@
+---
+host: satellite1
+fqdn: "{{ host }}.lab.example.com"
+# list in https://hardiman.consulting/rhel/9/set-up/host1-libvirt-network.html
+if1_mac: "52:54:00:00:00:03"
+user: nick
+# In the real world, this password would be protected with encryption.
+# see 
+# https://docs.ansible.com/ansible/latest/user_guide/vault.html#encrypting-individual-variables-with-ansible-vault
+user_ansible_pass: Password;1
+
+# Red Hat Subscription Manager
+rhsm_name: my_subscription_name
+rhsm_password: my_subscription_password
+rhsm_pool: my_subscription_pool_id
+
+# ansible config 
+inventory: "./inventory.ini"
+remote_user: ansible_user
+private_key_file: "/home/{{ user }}/.ssh/ansible-key.priv"
+

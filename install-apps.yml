@@ -1,0 +1,15 @@
+- name: install the foundation
+  hosts: provisioner
+  become: yes
+  # override user password for privilege escalation.
+  # ansible already has a become password for localhost.
+  # this new host has a different become password.
+  # By the time the role is finished, user has passwordless sudo and this is no longer needed.
+  vars:
+    ansible_become_password: "{{ user_ansible_pass }}"
+  gather_facts: no
+  roles:
+    - ansible-target
+
+# what other prereqs? 
+

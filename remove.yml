@@ -1,0 +1,16 @@
+---
+- name: remove antora1
+  hosts: localhost
+  become: yes
+  gather_facts: no
+  tasks:
+
+  - name: pull the plug
+    command:
+      cmd: "virsh destroy {{ host }}"
+
+  - name: delete everything
+    command:
+      cmd: "virsh undefine --nvram --remove-all-storage {{ host }}"
+
+

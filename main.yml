@@ -1,0 +1,10 @@
+
+- name: build the virtual hardware, install OS, and install apps
+  ansible.builtin.import_playbook: create-machine.yml
+
+- name: install infra apps
+  ansible.builtin.import_playbook: install-apps.yml
+
+- name: install satellite
+  ansible.builtin.import_playbook: build-satellite.yml
+

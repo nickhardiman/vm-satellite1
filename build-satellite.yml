@@ -1,0 +1,10 @@
+#
+- name: build the satellite application
+  hosts: provisioner
+  become: yes
+  gather_facts: no
+  tasks: 
+  - name: I got nothing
+    debug: 
+      msg: err.....
+

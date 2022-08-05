@@ -1,0 +1,33 @@
+= playbook for setting up a new VM.
+
+Hacked clone of https://github.com/nickhardiman/vm-antora1
+
+Create
+
+```
+# get the code
+git clone https://github.com/nickhardiman/vm-satellite1
+cd vm-satellite1
+# install roles to ~/.ansible/roles/
+ansible-galaxy install -r roles/requirements.yml 
+# build the machine
+ansible-playbook \
+  --ask-become-pass  \
+  -e 'rhsm_user=RH_user'  \
+  -e 'rhsm_password=RH_password' \
+  -e 'rhsm_pool_id=12345'  \
+  main.yml
+# test 
+???
+```
+
+Destroy
+
+```
+ansible-playbook  --ask-become-pass  delete.yml
+```
+or something similar like
+
+```
+ansible-playbook  --become-password-file=~/my-pass --extra-var='host=another-host' delete.yml
+```
