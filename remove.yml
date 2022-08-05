@@ -1,13 +1,19 @@
+# run
+#   ansible-playbook  --ask-become-pass remove.yml
+# or
+#   ansible-playbook  --become-password-file=~/my-pass --extra-var="host=kvm-guest" remove.yml
 ---
-- name: remove antora1
+- name: remove virt domain
   hosts: localhost
   become: yes
   gather_facts: no
   tasks:
 
+  # fails if domain is not running
   - name: pull the plug
     command:
       cmd: "virsh destroy {{ host }}"
+    ignore_errors: yes
 
   - name: delete everything
     command:
