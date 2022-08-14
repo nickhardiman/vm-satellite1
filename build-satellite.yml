@@ -8,3 +8,30 @@
     debug: 
       msg: err.....
 
+# something like 
+#
+#  register and update
+# subscription-manager register
+# dnf update
+# systemctl reboot
+#
+#  find the Satellite pool ID and subscribe
+# subscription-manager list --all --available > subscription-manager-list--all--available.txt
+# grep 'Red Hat Satellite Infrastructure Subscription' subscription-manager-list--all--available.txt 
+# subscription-manager attach --pool=12345
+#
+#  use RHEL 8 and Satellite 6.11 repos 
+# subscription-manager repos --list  > subscription-manager-repos--list.txt
+# grep satellite subscription-manager-repos--list.txt | grep 6.11
+# subscription-manager repos --disable "*"
+# subscription-manager repos \
+#   --enable=rhel-8-for-x86_64-baseos-rpms \
+#   --enable=rhel-8-for-x86_64-appstream-rpms \
+#   --enable=satellite-6.11-for-rhel-8-x86_64-rpms \
+#   --enable=satellite-maintenance-6.11-for-rhel-8-x86_64-rpms
+#
+#  install RPM packages
+# dnf install sos
+# yum module enable satellite:el8
+# yum install satellite
+
