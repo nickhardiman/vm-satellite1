@@ -46,12 +46,6 @@
 # firewall-cmd --permanent --add-service=https
 # firewall-cmd --reload
 #
-# set up Satellite
-# satellite-installer \
-#   --scenario satellite \
-#   --foreman-initial-admin-username someguy \
-#   --foreman-initial-admin-password somepass
-
 # checks
 # hostnamectl status
 # getenforce
@@ -60,4 +54,16 @@
 # ping -c1 $(hostname -s)
 # ping -c1 $(hostname -f)
 # dig -x 1.2.3.4
+
+# set up Satellite
+# satellite-installer \
+#   --scenario satellite \
+#   --foreman-initial-admin-username someguy \
+#   --foreman-initial-admin-password somepass
+#
+# checks
+# satellite-maintain service list
+# satellite-maintain health check
+# hammer ping
+
 
