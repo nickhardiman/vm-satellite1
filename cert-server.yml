@@ -1,0 +1,97 @@
+# uses _pipe modules to get the CSR to the CA signing host (builder) 
+# 
+---
+- name: server certificate
+  hosts: provisioner
+  become: yes
+  gather_facts: no
+  vars:
+    server_cn: "{{ inventory_hostname }}"
+  tasks: 
+
+  - name: required packages
+    ansible.builtin.dnf:
+      name: python3-cryptography
+      state: latest
+
+  - name: Create a working directory if it does not exist
+    ansible.builtin.file:
+      path: "{{ server_dir }}"
+      state: directory
+      mode: '0750'
+
+# CA certificate 
+  # copy certificate to /etc/pki/ca-trust/source/anchors/
+  - name: copy CA certificate to trust anchors directory
+    ansible.builtin.copy:
+      src: ca-certificate.pem
+      dest: /etc/pki/ca-trust/source/anchors/ca-certificate.pem
+      mode: '0644'
+    register: r_cp_ca_cert
+
+  # update-ca-trust
+  - name: update libraries of trusted CA certificates
+    ansible.builtin.command:
+      cmd: update-ca-trust
+    when: r_cp_ca_cert['changed'] == true
+
+# private key
+  # create private key {{ server_cn }}.key
+  # check with 
+  #   openssl rsa -check -noout -in {{ server_cn }}.key
+  - name: Create private key with password protection
+    community.crypto.openssl_privatekey:
+      path: "{{ server_dir }}/{{ server_cn }}.key"
+      #passphrase: "{{ server_secret_passphrase }}"
+      #cipher: auto
+
+  - name: copy key to /etc/pki/tls/private/
+    copy:
+      src: "{{ server_dir }}/{{ server_cn }}.key"
+      remote_src: yes
+      dest: "/etc/pki/tls/private/{{ server_cn }}.key"
+      mode: '0600'
+
+# server certificate
+  # create certificate and signing request {{ server_cn }}.csr
+  # View attributes and values in the CSR. 
+  #   openssl req -text -in {{ server_cn }}.csr
+  - name: Generate an OpenSSL Certificate Signing Request
+    community.crypto.openssl_csr_pipe:
+      privatekey_path: "{{ server_dir }}/{{ server_cn }}.key"
+      common_name: "{{ server_cn }}"
+    register: r_csr
+
+  # sign on builder host, not inventory host
+  # create signed certificate {{ server_cn }}.pem
+  # View attributes and values in the new certificate.
+  #   openssl x509 -in {{ server_cn }}.pem -noout -text
+  # Check the certificate chain.
+  #   openssl verify -CAfile  ca-certificate.pem  {{ server_cn }}.pem
+  # Check the server certificate and key match by comparing the modulus of each.
+  #   openssl x509 -noout -modulus -in {{ server_cn }}.pem | openssl md5
+  #   openssl rsa  -noout -modulus -in {{ server_cn }}.key | openssl md5
+  - name: Sign certificate with our CA
+    community.crypto.x509_certificate_pipe:
+      csr_content: "{{ r_csr['csr'] }}"
+      provider: ownca
+      ownca_path: "{{ server_dir }}/ca-certificate.pem"
+      ownca_privatekey_path: "{{ server_dir }}/ca-certificate.key"
+      ownca_privatekey_passphrase: "{{ ca_secret_passphrase }}"
+      ownca_not_after: +365d  # valid for one year
+      ownca_not_before: "-1d"  # valid since yesterday
+    delegate_to: "{{ groups['builder'][0] }}"
+    register: r_cert
+
+  - name: Write certificate file on server_1
+    copy:
+      dest: "{{ server_dir }}/{{ server_cn }}.pem"
+      content: "{{ r_cert['certificate'] }}"
+
+  - name: copy cert to /etc/pki/tls/certs/
+    copy:
+      src: "{{ server_dir }}/{{ server_cn }}.pem"
+      remote_src: yes
+      dest: "/etc/pki/tls/certs/{{ server_cn }}.pem"
+      mode: '0644'
+

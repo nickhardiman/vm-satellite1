@@ -1,0 +1,37 @@
+---
+# virt-install
+# variables to override are listed here. 
+#   https://github.com/nickhardiman/libvirt-guest/blob/main/defaults/main.yml
+host: satellite1
+install_iso: /var/lib/libvirt/images/rhel-8.6-x86_64-dvd.iso
+os_variant: rhel8.5
+# sizes in GiB
+ram: 16384
+disk_size: 300
+# MAC addresses are listed here.
+#   https://hardiman.consulting/rhel/9/set-up/host1-libvirt-network.html
+if1_mac: "52:54:00:00:00:03"
+
+# kickstart
+fqdn: "{{ host }}.lab.example.com"
+user: nick
+# partition for LVM, sizes in MiB
+pv_size: 276480
+lv_var: 245760
+
+# RHSM
+# Probably safer to provide these on the command line with options like --extra-var="rhsm_name=nick"
+# rather than set values here. 
+rhsm_name: my_subscription_name
+rhsm_password: my_subscription_password
+rhsm_pool: my_subscription_pool_id
+
+# ansible config 
+inventory: "./inventory.ini"
+remote_user: ansible_user
+private_key_file: "/home/{{ user }}/.ssh/ansible-key.priv"
+# In the real world, this password would be protected with encryption.
+# see 
+# https://docs.ansible.com/ansible/latest/user_guide/vault.html#encrypting-individual-variables-with-ansible-vault
+user_ansible_pass: Password;1
+

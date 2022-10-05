@@ -1,15 +1,66 @@
-- name: install the foundation
+#
+- name: build the satellite application
   hosts: provisioner
   become: yes
-  # override user password for privilege escalation.
-  # ansible already has a become password for localhost.
-  # this new host has a different become password.
-  # By the time the role is finished, user has passwordless sudo and this is no longer needed.
-  vars:
-    ansible_become_password: "{{ user_ansible_pass }}"
   gather_facts: no
-  roles:
-    - ansible-target
+  tasks: 
+  - name: I got nothing
+    debug: 
+      msg: err.....
 
-# what other prereqs? 
+
+# server certificate missing from this. 
+#
+# something like 
+#
+#  register and update
+# subscription-manager register someguy somepass
+# dnf update
+# systemctl reboot
+#
+#  find the Satellite pool ID and subscribe
+# subscription-manager list --all --available > subscription-manager-list--all--available.txt
+# grep 'Red Hat Satellite Infrastructure Subscription' subscription-manager-list--all--available.txt 
+# subscription-manager attach --pool=12345
+# or maybe
+# subscription-manager list  --all --available  \
+#   --matches 'Red Hat Satellite Infrastructure Subscription' | grep 'Pool ID'
+#
+#  use RHEL 8 and Satellite 6.11 repos 
+# subscription-manager repos --list  > subscription-manager-repos--list.txt
+# grep satellite subscription-manager-repos--list.txt | grep 6.11
+# subscription-manager repos --disable "*"
+# subscription-manager repos \
+#   --enable=rhel-8-for-x86_64-baseos-rpms \
+#   --enable=rhel-8-for-x86_64-appstream-rpms \
+#   --enable=satellite-6.11-for-rhel-8-x86_64-rpms \
+#   --enable=satellite-maintenance-6.11-for-rhel-8-x86_64-rpms
+#
+#  install RPM packages
+# dnf install sos
+# yum module enable satellite:el8
+# yum install satellite
+#
+# DNS
+#
+# firewall
+# firewall-cmd --info-service=RH-Satellite-6
+# firewall-cmd --permanent --add-service=RH-Satellite-6
+# firewall-cmd --permanent --add-service=https
+# firewall-cmd --reload
+#
+# set up Satellite
+# satellite-installer \
+#   --scenario satellite \
+#   --foreman-initial-admin-username someguy \
+#   --foreman-initial-admin-password somepass
+
+# checks
+# hostnamectl status
+# getenforce
+# systemctl status chronyd
+# ping -c1 localhost
+# ping -c1 $(hostname -s)
+# ping -c1 $(hostname -f)
+# dig -x 1.2.3.4
 

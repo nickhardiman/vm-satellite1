@@ -1,0 +1,14 @@
+- name: test stack
+  hosts: builder
+  gather_facts: no
+  tasks:
+
+  - name: check with ping
+    ansible.builtin.ping:
+
+  # requires login
+  - name: check the API
+    ansible.builtin.uri:
+      url: https://{{ fqdn }}/api/v2/status
+      validate_certs: no
+
