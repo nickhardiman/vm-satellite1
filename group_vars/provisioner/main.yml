@@ -30,8 +30,4 @@ rhsm_pool: my_subscription_pool_id
 inventory: "./inventory.ini"
 remote_user: ansible_user
 private_key_file: "/home/{{ user }}/.ssh/ansible-key.priv"
-# In the real world, this password would be protected with encryption.
-# see 
-# https://docs.ansible.com/ansible/latest/user_guide/vault.html#encrypting-individual-variables-with-ansible-vault
-user_ansible_pass: Password;1
 
