@@ -10,6 +10,11 @@
 
 
 # server certificate missing from this. 
+# https://access.redhat.com/documentation/en-us/red_hat_satellite/6.11/html-single/installing_satellite_server_in_a_connected_network_environment/index#Configuring_Server_with_a_Custom_SSL_Certificate_satellite
+# katello-certs-check \
+#   -c /etc/pki/tls/certs/satellite1.lab.example.com.pem \
+#   -k /etc/pki/tls/private/satellite1.lab.example.com.key  \
+#   -b /etc/pki/ca-trust/source/anchors/ca-certificate.pem
 #
 # something like 
 #
@@ -53,7 +58,10 @@
 # satellite-installer \
 #   --scenario satellite \
 #   --foreman-initial-admin-username someguy \
-#   --foreman-initial-admin-password somepass
+#   --foreman-initial-admin-password somepass \
+#   --certs-server-cert    "/etc/pki/tls/certs/satellite1.lab.example.com.pem" \
+#   --certs-server-key     "/etc/pki/tls/private/satellite1.lab.example.com.key" \
+#   --certs-server-ca-cert "/etc/pki/ca-trust/source/anchors/ca-certificate.pem"
 
 # checks
 # hostnamectl status

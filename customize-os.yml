@@ -53,7 +53,7 @@
       permanent: yes
       state: enabled
     loop:
-      - cockpit
+      #- cockpit # port 9090 clashes with capsule
       - http
       - https
       - RH-Satellite-6
@@ -61,11 +61,11 @@
 
 
 # systemd
-  - name: start the server
-    ansible.builtin.systemd:
-      name: cockpit.socket
-      state: started
-      enabled: yes
+#  - name: start the server
+#    ansible.builtin.systemd:
+#      name: cockpit.socket
+#      state: started
+#      enabled: yes
 
 #
 # checks

@@ -60,6 +60,16 @@
     community.crypto.openssl_csr_pipe:
       privatekey_path: "{{ server_dir }}/{{ server_cn }}.key"
       common_name: "{{ server_cn }}"
+      key_usage: 
+        - digitalSignature
+        - nonRepudiation
+        - keyEncipherment
+        - dataEncipherment
+      extended_key_usage: 
+        - serverAuth
+        - clientAuth
+        - codeSigning
+        - emailProtection
     register: r_csr
 
   # sign on builder host, not inventory host
